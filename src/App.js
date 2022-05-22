@@ -1,25 +1,82 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState } from 'react'
+import Category from './components/Category'
+import Navbar from './components/Navbar'
+import Products from './components/Products'
+import Shopping from './components/Shopping'
+import { products } from './data'
+import './sass/style.css'
 
-function App() {
+const App = () => {
+ 
+  const [items,SetItems] = useState(products)
+  const [showCart, Setshowcart] = useState(true)
+  const [cart, Setcart] = useState([])
+
+  const handleShopping = () => {
+    Setshowcart(!showCart)
+  }
+
+ 
+  const addToCard = (cartItem) => {
+    const newIndex = cart.find((item) => item.id === cartItem.id)
+
+    if (newIndex) {
+   newIndex.quantity+=1
+  newIndex.price+= cartItem.price
+
+    } else {
+  Setcart([...cart,{
+    id: cartItem.id,
+    img: cartItem.img,
+    title: cartItem.title,
+    price: cartItem.price,
+    quantity: 1
+    
+   }]) 
+}
+  console.log(cart)
+  
+    }
+    
+    
+
+
+  const filterProducts = ( catname ) => {
+    const updateItems = products.filter((product) => {
+      return product.cat === catname;
+    })
+    SetItems(updateItems)
+    
+  }
+
+  
+  const allProduct = () => {
+    SetItems(products)
+  }
+   
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  <>
+    <Navbar handleShopping={handleShopping} cart={cart} />
+
+  {
+   showCart ? <div className="wrapper">
+     <Category 
+     filterProducts={filterProducts} 
+     allProduct={allProduct} 
+     items={items}  />
+      <Products 
+      items={items} 
+      SetItems={SetItems}
+       addToCard={addToCard} />
+    </div> : <Shopping cart={cart} Setcart={Setcart} />
+
+      }
+
+  </>
+  )
 }
 
 export default App;
+
+
